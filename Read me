@@ -1,4 +1,4 @@
- Credit Card Fraud Detection
+Credit Card Fraud Detection
 
 An end-to-end machine learning pipeline that detects fraudulent credit card transactions from a highly imbalanced dataset of 284,807 real-world transactions. The project addresses the core challenge of fraud detection — extreme class imbalance (only 0.17% fraud) — using SMOTE oversampling and evaluates models using business-relevant metrics beyond simple accuracy.
 ⸻

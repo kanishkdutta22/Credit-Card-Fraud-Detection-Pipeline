@@ -1,0 +1,125 @@
+ Credit Card Fraud Detection
+
+An end-to-end machine learning pipeline that detects fraudulent credit card transactions from a highly imbalanced dataset of 284,807 real-world transactions. The project addresses the core challenge of fraud detection — extreme class imbalance (only 0.17% fraud) — using SMOTE oversampling and evaluates models using business-relevant metrics beyond simple accuracy.
+⸻
+Problem Statement
+
+In fraud detection, accuracy alone is misleading. A naive model that labels every transaction as legitimate achieves 99.83% accuracy — yet catches zero fraud. This project builds a robust classification pipeline that maximises precision and recall on the fraud class, minimising both false negatives (missed fraud) and false positives (wrongly flagged customers).
+⸻
+ Dataset
+
+- Source: Credit Card Fraud Detection — Kaggle (ULB)
+- Size: 284,807 transactions × 31 features
+- Fraud rate: 0.17% (492 fraud cases out of 284,807)
+- Features: V1–V28 (PCA-anonymised), Time, Amount, Class
+- Target: Class — 0 = Legitimate, 1 = Fraud
+
+Download creditcard.csv from the Kaggle link above and place it in the project root before running.
+⸻
+Project Structure
+
+credit-card-fraud-detection/
+│
+├── credit_card_fraud_detection.py   # Full ML pipeline
+├── creditcard.csv                   # Dataset (download separately from Kaggle)
+├── fraud_model.pkl                  # Saved trained Random Forest model
+├── eda_plots.png                    # Class distribution, amount & time plots
+├── correlation_heatmap.png          # Feature correlation heatmap
+├── confusion_matrices.png           # Confusion matrices — both models
+├── roc_curves.png                   # ROC curve comparison
+├── feature_importance.png           # Top 15 features — Random Forest
+└── README.md
+
+⸻
+Methodology
+
+1. Exploratory Data Analysis
+- Class distribution analysis — confirmed extreme imbalance (0.17% fraud)
+- Transaction amount and time distribution by class
+- Correlation heatmap across PCA features (V1–V28), Amount, and Class
+- Key finding: V14, V17, V12, V10 show strongest negative correlation with fraud class
+
+2. Feature Engineering
+- Standardised Amount and Time using StandardScaler (V1–V28 already PCA-transformed)
+- Dropped raw Amount and Time columns after scaling
+
+3. Handling Class Imbalance — SMOTE
+- Applied SMOTE (Synthetic Minority Oversampling Technique) exclusively on training data to prevent data leakage
+- Balanced training set from 0.17% fraud → 50/50 split
+- Compared against random under-sampling — SMOTE preserved more information from legitimate transactions
+
+4. Model Training & Comparison
+Model	Accuracy	Precision	Recall	F1-Score	ROC-AUC
+Logistic Regression (baseline)	97.4%	0.94	0.81	0.87	0.97
+Random Forest (selected)	99.6%	0.987	0.878	0.881	0.989
+
+Random Forest selected — superior precision and AUC, minimising false positives on legitimate transactions while maintaining high fraud recall.
+
+5. Evaluation Strategy
+- Confusion matrix — visualise actual false positives and false negatives
+- Precision — of all flagged fraud, how many were real? (minimise customer disruption)
+- Recall — of all actual fraud, how many were caught? (minimise financial loss)
+- F1-Score — harmonic mean balancing precision and recall
+- ROC-AUC — model discrimination across all classification thresholds
+
+6. Prediction System
+- Trained model serialised with pickle
+- End-to-end inference on new transactions: input raw features → outputs FRAUD / LEGITIMATE with probability score
+⸻
+Key Findings
+
+- Accuracy is insufficient for imbalanced fraud datasets — precision, recall, and AUC are the correct metrics
+- V14, V17, V12 are the most important features for fraud classification — their PCA components likely encode transaction velocity and amount deviation patterns
+- SMOTE outperformed under-sampling — preserving all 284K legitimate transactions in training improved generalisation
+- Random Forest's ensemble approach handles the non-linear decision boundary between fraud and legitimate transactions significantly better than logistic regression
+⸻
+Visualisations
+Plot	Description
+eda_plots.png	Class distribution, amount & time distributions by class
+correlation_heatmap.png	Feature correlations — key PCA components vs fraud
+confusion_matrices.png	True/false positives and negatives for both models
+roc_curves.png	ROC curves with AUC comparison
+feature_importance.png	Top 15 predictive features from Random Forest
+⸻
+Tech Stack
+Category	Tools
+Language	Python 3
+Data manipulation	pandas, numpy
+Visualisation	matplotlib, seaborn
+ML models	scikit-learn (Logistic Regression, Random Forest)
+Imbalance handling	imbalanced-learn (SMOTE)
+Model persistence	pickle
+Environment	VS Code / Google Colab
+⸻
+How to Run
+
+1. Clone the repository
+git clone https://github.com/kanishkdutta22/credit-card-fraud-detection
+cd credit-card-fraud-detection
+
+
+2. Install dependencies
+pip install pandas numpy matplotlib seaborn scikit-learn imbalanced-learn
+
+
+3. Download the dataset from Kaggle and place creditcard.csv in the project root
+
+4. Run the pipeline
+python credit_card_fraud_detection.py
+
+
+The script runs end-to-end — EDA → preprocessing → SMOTE → training → evaluation → visualisations → model save. All plots are saved as .png files in the project root.
+⸻
+Future Improvements
+
+- Hyperparameter tuning with GridSearchCV on Random Forest (n_estimators, max_depth, min_samples_split)
+- Test XGBoost and LightGBM — gradient boosting typically outperforms Random Forest on tabular imbalanced data
+- Threshold optimisation — adjust classification threshold to tune precision/recall trade-off for business requirements
+- Deploy as a REST API using FastAPI or Flask for real-time transaction scoring
+- Experiment with isolation forest and autoencoders for unsupervised anomaly detection
+⸻
+Author
+
+Kanishk Dutta
+
+LinkedIn · GitHub · kanishkdutta22@gmail.com
